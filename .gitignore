@@ -1,0 +1,7 @@
+node_modules
+dist
+dist-ssr
+*.local
+.vscode
+builder.json
+builder-0.1-macos-aarch64.tar.gz

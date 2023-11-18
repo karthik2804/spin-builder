@@ -1,0 +1,5 @@
+name = "builder"
+version = "0.1"
+spin_compatibility = ">=0.7"
+license = "Apache-2.0"
+package = "./src-tauri/target/release/spin-builder"
