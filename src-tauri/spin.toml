@@ -13,7 +13,7 @@ sqlite_password = { required = true }
 id = "sql-cli"
 source = "target/spin-sqlite-web-cli.wasm"
 exclude_files = ["**/node_modules"]
-sqlite_databases = ["default"]
+sqlite_databases = ["default", "test"]
 [component.trigger]
 route = "/internal/sqlite/..."
 [component.build]
@@ -32,6 +32,7 @@ sqlite_password = "{{ sqlite_password }}"
 source = { url = "https://github.com/fermyon/spin-fileserver/releases/download/v0.0.3/spin_static_fs.wasm", digest = "sha256:38bf971900228222f7f6b2ccee5051f399adca58d71692cdfdea98997965fd0d" }
 id = "dev"
 files = [{ source = "assets", destination = "/" }]
+key_value_stores = ["test", "default"]
 ai_models = ["llama2-chat"]
 [component.trigger]
 route = "/static/..."

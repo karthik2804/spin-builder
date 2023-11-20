@@ -59,7 +59,9 @@
         "height": 800,
         "resizable": true,
         "title": "spin-builder",
-        "width": 1000
+        "width": 1000,
+        "center": true,
+        "fileDropEnabled": false
       }
     ]
   }

@@ -1,10 +1,8 @@
-interface GraphStruct {
-    nodes: any[]
-    edges: any[]
-}
+import { GraphStruct } from "../graph-utils/manifestToGraph";
 
 interface Manifest {
     application: AppDetails;
+    trigger: any
 }
 
 interface AppDetails {
@@ -15,11 +13,11 @@ interface AppDetails {
 
 
 export const state = {
-    componentDataStores: ["sqlite-databases", "kv-stores"],
+    componentDataStores: ["sqlite_databases", "kv_stores"],
     componentCapabilites: ["allowed-outbound-hosts", "files", "ai-models"],
     manifest: { application: { name: "", version: "", description: "" } } as Manifest,
     graph: {} as GraphStruct,
+    interactionModeLocked: false
 }
 
 export type State = typeof state
-export type { GraphStruct }

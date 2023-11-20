@@ -21,6 +21,29 @@ store.subscribe((mutation, _) => {
   }
 })
 
+let globalDragging = ref(false);
+
+// Global event listener to prevent default behavior for dragenter and dragover events
+function preventDefaultForGlobalDrag(e: DragEvent) {
+  e.preventDefault();
+}
+
+// Global event listener to prevent default behavior for drop events
+function preventDefaultAndHandleDrop(e: DragEvent) {
+  e.preventDefault();
+  globalDragging.value = false;
+
+  // Handle the dropped files globally if needed
+  if (e.target instanceof HTMLElement) {
+    console.log('Dropped files globally:', e.dataTransfer?.files);
+  }
+}
+
+// Set up global event listeners
+document.addEventListener('dragenter', preventDefaultForGlobalDrag);
+document.addEventListener('dragover', preventDefaultForGlobalDrag);
+document.addEventListener('drop', preventDefaultAndHandleDrop);
+
 </script>
 
 <template>

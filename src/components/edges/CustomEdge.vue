@@ -2,6 +2,9 @@
 import { computed } from 'vue'
 import type { EdgeProps, Position } from '@vue-flow/core'
 import { BaseEdge, EdgeLabelRenderer, getBezierPath } from '@vue-flow/core'
+import { useStore } from '../../store';
+
+let store = useStore()
 
 interface CustomEdgeProps extends EdgeProps {
   id: string
@@ -15,8 +18,9 @@ interface CustomEdgeProps extends EdgeProps {
   markerEnd: string
 }
 
-const props = defineProps<CustomEdgeProps>()
+let interactionModeLocked = computed(() => store.state.interactionModeLocked)
 
+const props = defineProps<CustomEdgeProps>()
 const path = computed(() => getBezierPath(props))
 </script>
 
@@ -27,9 +31,9 @@ export default {
 </script>
 
 <template>
-  <BaseEdge :path="path[0]" :marker-end="markerEnd" />
+  <BaseEdge :path="path[0]" :marker-end="markerEnd" :style="{ stroke: data.active ? 'red' : '' }" />
 
-  <EdgeLabelRenderer>
+  <EdgeLabelRenderer v-if="!interactionModeLocked">
     <div :style="{
       pointerEvents: 'all',
       position: 'absolute',

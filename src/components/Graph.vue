@@ -2,54 +2,92 @@
 import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
-import { VueFlow, useVueFlow, type Edge, MarkerType, Connection } from '@vue-flow/core'
+import { VueFlow, useVueFlow, type Edge, MarkerType, Connection, GraphNode } from '@vue-flow/core'
 import ComponentNode from './nodes/ComponentNode.vue'
 import StoreNode from './nodes/StoreNode.vue'
 import CustomEdge from './edges/CustomEdge.vue'
 import TriggerNode from './nodes/TriggerNode.vue'
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useStore } from '../store';
+import { addEdgeToManifest, removeEdgeFromManifest, validateConnection } from '../graph-utils/edgeManipulation'
 
 const store = useStore()
 
 const { removeEdges } = useVueFlow()
-const { onConnect, addEdges } = useVueFlow()
+const { onConnect, addEdges, getSelectedNodes } = useVueFlow()
 
 const nodes = computed({ get: () => store.state.graph.nodes, set: (value) => store.state.graph.nodes = value })
 const edges = computed({ get: () => store.state.graph.edges, set: (value) => store.state.graph.edges = value })
 
 onConnect((params: Connection) => {
-    console.log(params.source, params.targetHandle)
-    if (params.source == "sql_stores" && params.targetHandle != "sqlite-databases") {
-        store.commit('addToast', { message: "invalid Connection", type: "error" })
+    if (!validateConnection(store.state.manifest, params.source, params.sourceHandle || "", params.target, params.targetHandle || "")) {
+        store.commit('addToast', { message: "invalid connection", type: "error" })
         return
     }
     let edge: Edge = {
         id: `e${params.source}-${params.sourceHandle}-${params.target}-${params.targetHandle}`, source: params.source, target: params.target, type: 'custom',
         sourceHandle: params.sourceHandle, targetHandle: params.targetHandle, markerEnd: {
             type: MarkerType.ArrowClosed,
-        }, data: {
-            type: "temptry"
-        }
+        },
     }
     addEdges([edge])
+    addEdgeToManifest(store.state.manifest, params.source, params.sourceHandle || "", params.target, params.targetHandle || "")
+    if (edge.target.includes("trigger")) {
+        handleTriggerValidation(edge.target, true)
+    }
 })
 
 function removeEdge(id: string) {
-    console.log(store.state.graph.edges.filter(k => { return k.id === id }))
+    let edges: any[] = store.state.graph.edges.filter(k => { return k.id === id })
+    let edge = edges.shift()
+    removeEdgeFromManifest(store.state.manifest, edge as Edge)
+    if (edge.target.includes("trigger")) {
+        handleTriggerValidation(edge.target, false)
+    }
     removeEdges(id)
+}
+
+const selectedNodes = ref([] as GraphNode<any, any, string>[])
+
+watch(getSelectedNodes, (newValue) => {
+    selectedNodes.value = newValue
+    let id = ""
+    if (selectedNodes.value.length) {
+        id = selectedNodes.value[0].id
+    }
+    store.state.graph.edges.map((edge: any) => {
+        if (edge.source === id || edge.target === id) {
+            edge.data.active = true;
+            edge.animated = true
+        } else {
+            edge.data.active = false;
+            edge.animated = false
+        }
+    })
+})
+
+function handleTriggerValidation(id: string, value: boolean) {
+    console.log("here")
+    const nodeIndex = store.state.graph.nodes.findIndex(node => node.id === id);
+    if (nodeIndex !== -1) {
+        store.state.graph.nodes[nodeIndex].data.connected = value;
+    }
+}
+
+function interactionModeLocked(state: boolean) {
+    store.state.interactionModeLocked = state
 }
 
 </script>
 <template>
     <div class="flex-grow">
-        <VueFlow v-model:nodes="nodes" v-model:edges="edges" fit-view-on-init class="vue-flow-basic-example"
-            :default-zoom="1.5" :min-zoom="0.2" :max-zoom="4">
+        <VueFlow v-model:nodes="nodes" v-model:edges="edges" fit-view-on-init :default-zoom="1.5" :min-zoom="0.2"
+            :max-zoom="4">
             <Background pattern-color="#aaa" :gap="8" />
 
             <MiniMap />
 
-            <Controls />
+            <Controls @interaction-change="interactionModeLocked" />
 
             <template #node-component="nodeProps">
                 <ComponentNode v-bind="nodeProps" />
@@ -71,8 +109,16 @@ function removeEdge(id: string) {
 </template>
 <style>
 .vue-flow__handle {
-    height: 10px;
-    width: 10px;
+    height: 10px !important;
+    width: 10px !important;
+}
+
+.vue-flow__handle-left {
+    left: -5px !important;
+}
+
+.vue-flow__handle-right {
+    right: -5px !important;
 }
 
 .vue-flow__node.selected {

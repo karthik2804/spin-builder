@@ -9,9 +9,10 @@ let data: any = defineProps(["modal"])
             <div class="w-full min-h-screen fixed top-0 right-0 bg-gray-500 bg-opacity-50 backdrop-blur-lg"
                 @click="$emit('close')">
             </div>
-            <div class="relative p-4 w-full max-h-full flex items-center justify-center">
+            <div class="relative p-4 w-full max-h-full h-screen flex items-center justify-center">
                 <!-- Modal content -->
-                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700 max-w-6xl .max-w-screen-md container">
+                <div
+                    class="flex flex-col h-4/5 overflow-hidden relative bg-white rounded-lg shadow dark:bg-gray-700 max-w-6xl .max-w-screen-md container">
                     <!-- Modal header -->
                     <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
@@ -29,7 +30,7 @@ let data: any = defineProps(["modal"])
                         </button>
                     </div>
                     <!-- Modal body -->
-                    <div class="p-4 md:p-5 space-y-4">
+                    <div class="p-4 md:p-5 space-y-4 flex-grow-1 h-full overflow-hidden">
                         <slot name="body"> Default body content </slot>
                     </div>
                 </div>
@@ -38,4 +39,4 @@ let data: any = defineProps(["modal"])
     </transition>
 </template>
 
-<style></style>
+<style scoped></style>

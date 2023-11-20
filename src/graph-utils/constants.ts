@@ -7,9 +7,9 @@ const nodeTypes = {
 }
 
 enum edgeType {
-    triggerComponent,
-    sqliteConnect,
-    kvConnect,
+    triggerConnect = "triggerConnect",
+    sqliteConnect = "sqliteConnect",
+    kvConnect = "kvConnect",
 }
 
 

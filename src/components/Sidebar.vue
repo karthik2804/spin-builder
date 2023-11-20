@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import AppDetails from './utils/AppDetails.vue'
-import AddNodeModal from '../views/AddNodeModal.vue'
+import AddNodeModal from '../views/addNodeModal/AddNodeModal.vue'
 import { useStore } from '../store';
 
 let store = useStore()
@@ -15,7 +15,6 @@ function closeModal() {
 }
 
 function save() {
-    store.dispatch('notImplemented')
     store.dispatch('saveManifest')
 }
 </script>
@@ -25,12 +24,18 @@ function save() {
         data-dev-hint="sidebar; px-0 for frameless; px-2 for visually inset the navigation">
         <div class="bg-gray-700 font-bold text-xl text-white-600 p-2">Spin Builder</div>
         <AppDetails></AppDetails>
-        <div class="flex-grow"></div>
+        <div class="flex-grow">
+            <div class="relative flex py-5 items-center px-4">
+                <div class="w-5 border-t border-gray-500"></div>
+                <span class="flex-shrink mx-1 text-gray-600 text-xs font-bold">wasm components</span>
+                <div class="flex-grow border-t border-gray-500"></div>
+            </div>
+        </div>
         <div class="p-4 flex justify-center">
             <button @click="openModal()"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">Add
                 Node</button>
-            <button @click="save" class="bg-green-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save
+            <button @click="save" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Save
                 Manifest</button>
         </div>
     </aside>

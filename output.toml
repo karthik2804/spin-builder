@@ -17,7 +17,7 @@ required = true
 
 [[trigger.http]]
 id = "trigger-sql-cli"
-component = "sql-cli"
+component = "dev"
 route = "/internal/sqlite/..."
 
 [[trigger.http]]
@@ -33,7 +33,10 @@ allowed_outbound_hosts = [
     "mysql://*:*",
     "postgres://*:*",
 ]
-sqlite_databases = ["default"]
+sqlite_databases = [
+    "default",
+    "test",
+]
 
 [component.sql-cli.variables]
 sqlite_username = "{{ sqlite_username }}"
@@ -53,6 +56,10 @@ allowed_outbound_hosts = [
     "redis://*:*",
     "mysql://*:*",
     "postgres://*:*",
+]
+key_value_stores = [
+    "test",
+    "default",
 ]
 ai_models = ["llama2-chat"]
 
