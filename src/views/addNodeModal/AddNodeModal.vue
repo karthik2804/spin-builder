@@ -33,7 +33,15 @@ function test(trigger: any) {
 }
 
 function close() {
-    console.log("here")
+    newTrigger.value?.clearState()
+    newWasmComponent.value?.clearState()
+    emit('close')
+}
+
+function addWasmComponent(payload: any) {
+    store.commit('addWasmComponent', payload)
+    newTrigger.value?.clearState()
+    newWasmComponent.value?.clearState()
     emit('close')
 }
 
@@ -44,7 +52,8 @@ function close() {
         <template v-slot:body>
             <div class="h-full flex flex-col">
                 <Tabs :tabs="tabs" @tabClick="switchTab"></Tabs>
-                <UploadNewFile ref="newWasmComponent" v-show="activeTab === 'wasm'" />
+                <UploadNewFile ref="newWasmComponent" v-show="activeTab === 'wasm'" @addWasmComponent="addWasmComponent"
+                    @cancel="close" />
                 <AddTrigger ref="newTrigger" v-show="activeTab === 'trigger'" @addNewTrigger="test" @cancel="close" />
             </div>
         </template>

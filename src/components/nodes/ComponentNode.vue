@@ -11,6 +11,7 @@ const capabilities = computed(() => store.state.componentCapabilites)
 interface ComponentNodeProps extends NodeProps {
     data: {
         id: string,
+        source: string | any,
         description: string | null,
         allowedOutboundHosts: string[],
         files: string[],
@@ -32,6 +33,7 @@ function hyphenToCamel(input: string): string {
             <div>
                 {{ data.id }}
             </div>
+            <div class="text-xs text-gray-400">source: {{ data.source }}</div>
             <span class="text-gray-400 text-xs">{{ data.description || "no description" }}</span>
         </div>
         <div class="text-xs py-">

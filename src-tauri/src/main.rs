@@ -1,6 +1,11 @@
-use std::{env, fs::File, io::Write, path::PathBuf};
+use std::{
+    env,
+    fs::{self, File},
+    io::Write,
+    path::PathBuf,
+};
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use clap::{FromArgMatches, Parser};
 use serde::{Deserialize, Serialize};
 use spin_manifest::schema::v2::AppManifest;
@@ -42,7 +47,9 @@ fn main() -> Result<()> {
         .invoke_handler(tauri::generate_handler![
             get_manifest,
             save_manifest,
-            parse_wasm_binary
+            parse_wasm_binary,
+            download_parse_wasm,
+            read_parse_wasm,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -86,6 +93,8 @@ struct WasmBinaryParsedResult {
 
 #[tauri::command]
 fn parse_wasm_binary(name: String, bytes: Vec<u8>) -> Result<WasmBinaryParsedResult, String> {
+    let bytes = spin_componentize::componentize_if_necessary(&bytes).map_err(|e| e.to_string())?;
+
     let mut ret = WasmBinaryParsedResult::default();
     let component =
         wasm_compose::graph::Component::from_bytes(name, bytes).map_err(|e| format!("{e:#}"))?;
@@ -123,4 +132,37 @@ fn parse_wasm_binary(name: String, bytes: Vec<u8>) -> Result<WasmBinaryParsedRes
     };
     ret.wit = wit;
     Ok(ret)
+}
+
+#[tauri::command]
+fn read_parse_wasm(
+    state: tauri::State<SpinBuilder>,
+    path: String,
+) -> Result<WasmBinaryParsedResult, String> {
+    let mut proj_dir = state.manifest_file.clone();
+    proj_dir.pop();
+    let file_path = proj_dir.join(path);
+    let bytes = fs::read(file_path).map_err(|e| format!("{e:#}"))?;
+    parse_wasm_binary("test".to_owned(), bytes)
+}
+
+#[tauri::command]
+async fn download_parse_wasm(url: String) -> Result<WasmBinaryParsedResult, String> {
+    let bytes = download_file(&url).await.map_err(|e| format!("{e:#}"))?;
+    parse_wasm_binary("test".to_owned(), bytes)
+}
+
+async fn download_file(url: &str) -> Result<Vec<u8>> {
+    // Send an HTTP GET request to the specified URL
+    let response = reqwest::get(url).await?;
+
+    // Ensure the request was successful (status code 200)
+    if !response.status().is_success() {
+        return Err(anyhow!("function failed"));
+    }
+
+    // Read the response body and convert it to bytes
+    let bytes = response.bytes().await?;
+
+    Ok(bytes.to_vec())
 }

@@ -67,7 +67,6 @@ function ManifestToGraph(manifest: any): GraphStruct {
 
         triggers.map((trigger: any) => {
             trigger.id = trigger.id === undefined ? `trigger-${(Math.random() + 1).toString(36).substring(7)}` : trigger.id
-            console.log(trigger.id ? (Math.random() + 1).toString(36).substring(7) : trigger.id)
             nodes.add(generateTriggerNode(trigger.id, trigger_index, k, trigger.route))
             edges.add({
                 id: `${constants.edgeType.triggerConnect}-${trigger.component}-trigger-${trigger.id}`, source: `component-${trigger.component}`, target: trigger.id, type: 'custom',
@@ -87,10 +86,11 @@ function ManifestToGraph(manifest: any): GraphStruct {
     }
 }
 
-function generateComponentNode(id: string, index: number, component: any) {
+export function generateComponentNode(id: string, index: number, component: any) {
     return {
         id: `${id}`, type: 'component', position: { x: 250, y: 400 * index + 100 }, data: {
             id: id,
+            source: component.source.url ? component.source?.url.split("/").splice(-1)[-0] : component.source.split("/").splice(-1)[-0],
             description: component.description,
             allowedOutboundHosts: component.allowed_outbound_hosts || "none",
             files: component.files || "none",

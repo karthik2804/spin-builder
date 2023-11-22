@@ -24,7 +24,6 @@ function validateComponentConnect(source: string, _sourceHandle: string, targetH
 }
 
 function validateTriggerConnect(_manifest: any, sourceHandle: string): boolean {
-    console.log(sourceHandle)
     if ((sourceHandle === "export")) {
         return true
     }
@@ -52,7 +51,6 @@ export function addEdgeToManifest(manifest: any, source: string, sourceHandle: s
         case "trigger":
             let component = source.replace("component-", "")
             manifest.trigger.http.map((k: any) => {
-                console.log(k, source)
                 if (k.id === target) {
                     k.component = component
                 }
@@ -65,7 +63,6 @@ export function addEdgeToManifest(manifest: any, source: string, sourceHandle: s
 export function removeEdgeFromManifest(manifest: any, edge: Edge) {
     let sourceNode = getNodeType(edge.source)
     let targetNode = getNodeType(edge.target)
-    console.log(targetNode)
     switch (targetNode) {
         case "component":
             let id = edge.target.replace("component-", "")

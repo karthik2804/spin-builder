@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import AppDetails from './utils/AppDetails.vue'
 import AddNodeModal from '../views/addNodeModal/AddNodeModal.vue'
 import { useStore } from '../store';
@@ -17,6 +17,14 @@ function closeModal() {
 function save() {
     store.dispatch('saveManifest')
 }
+
+let components = computed(() => store.state.wasmComponents)
+
+function addSpinComponent(id: string) {
+    console.log("here")
+    store.commit('addSpinComponent', id)
+}
+
 </script>
 <template>
     <aside id="sidebar"
@@ -29,6 +37,14 @@ function save() {
                 <div class="w-5 border-t border-gray-500"></div>
                 <span class="flex-shrink mx-1 text-gray-600 text-xs font-bold">wasm components</span>
                 <div class="flex-grow border-t border-gray-500"></div>
+            </div>
+            <div class="px-4">
+                <div v-for="component in components" class="flex py-2 items-center">
+                    <div class="flex-grow text-sm">
+                        {{ component.name }}
+                    </div>
+                    <div class="pl-4 text-lg" @click="addSpinComponent(component.name)">+</div>
+                </div>
             </div>
         </div>
         <div class="p-4 flex justify-center">

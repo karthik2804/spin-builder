@@ -67,7 +67,6 @@ watch(getSelectedNodes, (newValue) => {
 })
 
 function handleTriggerValidation(id: string, value: boolean) {
-    console.log("here")
     const nodeIndex = store.state.graph.nodes.findIndex(node => node.id === id);
     if (nodeIndex !== -1) {
         store.state.graph.nodes[nodeIndex].data.connected = value;

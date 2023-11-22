@@ -3,6 +3,7 @@ import { GraphStruct } from "../graph-utils/manifestToGraph";
 interface Manifest {
     application: AppDetails;
     trigger: any
+    component: Record<string, any>
 }
 
 interface AppDetails {
@@ -17,7 +18,8 @@ export const state = {
     componentCapabilites: ["allowed-outbound-hosts", "files", "ai-models"],
     manifest: { application: { name: "", version: "", description: "" } } as Manifest,
     graph: {} as GraphStruct,
-    interactionModeLocked: false
+    interactionModeLocked: false,
+    wasmComponents: {} as any
 }
 
 export type State = typeof state

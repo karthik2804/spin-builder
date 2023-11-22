@@ -7,7 +7,6 @@ let route = ref("")
 let routeError = ref("")
 
 function addTrigger() {
-    console.log(route.value, route.value.length)
     if (route.value === "") {
         routeError.value = "Route is a required field"
         return
@@ -17,7 +16,6 @@ function addTrigger() {
         return
     }
     let index = route.value.indexOf("...")
-    console.log(index, route.value.length, route.value.length != index + 2)
     if (index != -1 && route.value[index - 1] != "/") {
         routeError.value = "... must be prefixed a \"/\""
         return

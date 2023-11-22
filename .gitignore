@@ -5,3 +5,4 @@ dist-ssr
 .vscode
 builder.json
 builder-0.1-macos-aarch64.tar.gz
+output.toml

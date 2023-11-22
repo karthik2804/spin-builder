@@ -26,12 +26,31 @@ export interface Actions {
 export const actions: ActionTree<State, State> & Actions = {
     async getManifest({ commit }) {
         let manifest: string = await invoke("get_manifest")
-        console.log(manifest)
+        let parsedManifest: any
         if (manifest) {
-            commit("updateManifest", JSON.parse(manifest))
+            parsedManifest = JSON.parse(manifest)
+            commit("updateManifest", parsedManifest)
             commit("UpdateNodesFromManifest")
             commit("addToast", { message: "Loaded app", type: "success" })
         }
+        // Read and parse existing wasms. 
+        let components = parsedManifest.component
+        await Object.keys(components).map(async (k: string) => {
+            let source: String | any = components[k].source
+            if (typeof (source) === "string") {
+                // It is a file path
+                console.log("parsing local module")
+                let comp: any = await invoke('read_parse_wasm', { path: source })
+                comp.name = source
+                commit('addWasmComponent', comp)
+            } else if (typeof (source) === "object") {
+                // It is a file URL
+                console.log("parsing remote module")
+                let comp: any = await invoke('download_parse_wasm', { url: source.url })
+                comp.name = source.url
+                commit('addWasmComponent', comp)
+            }
+        })
     },
     async saveManifest({ commit, state }) {
         let errors = validateManifest(state.manifest)

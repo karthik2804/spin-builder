@@ -33,10 +33,6 @@ function preventDefaultAndHandleDrop(e: DragEvent) {
   e.preventDefault();
   globalDragging.value = false;
 
-  // Handle the dropped files globally if needed
-  if (e.target instanceof HTMLElement) {
-    console.log('Dropped files globally:', e.dataTransfer?.files);
-  }
 }
 
 // Set up global event listeners
