@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { Ref, ref } from 'vue';
-import Modal from '../../components/utils/Modal.vue'
-import Tabs from '../../components/utils/Tabs.vue'
+import Modal from '../../../components/utils/Modal.vue'
+import Tabs from '../../../components/utils/Tabs.vue'
 import UploadNewFile from './UploadNewFile.vue'
 import AddTrigger from './AddTrigger.vue';
-import { useStore } from '../../store';
+import { useStore } from '../../../store';
 
 let store = useStore()
 const tabs: any = ref([
-    { name: "wasm component" }, { name: "trigger", active: true }
+    { name: "trigger", active: true }, { name: "wasm component" },
 ])
 
 let activeTab = ref("trigger")
@@ -50,7 +50,7 @@ function addWasmComponent(payload: any) {
 <template>
     <Modal :modal="{ id: 'addNode', title: 'Add Node' }" @close="close">
         <template v-slot:body>
-            <div class="h-full flex flex-col">
+            <div class="h-full flex flex-col p-4">
                 <Tabs :tabs="tabs" @tabClick="switchTab"></Tabs>
                 <UploadNewFile ref="newWasmComponent" v-show="activeTab === 'wasm'" @addWasmComponent="addWasmComponent"
                     @cancel="close" />

@@ -36,9 +36,15 @@ onMounted(() => {
                 </svg>
             </div>{{ data.type }} Trigger
         </div>
-        <div class="relative p-4 text-xs">
+        <div class="p-4 text-xs">
             <div>Route: {{ data.route }}</div>
-            <Handle connectable="single" type="target" :position="Position.Left" />
+        </div>
+        <div class="relative p-2 text-xs">
+            <div class="ml-1">wasi:http/incoming-handler@0.2.0-rc-2023-10-18</div>
+            <div class="ml-1">fermyon:spin/inbound-http
+                <Handle connectable="single" id="wasi:http/incoming-handler@0.2.0-rc-2023-10-18" type="target"
+                    :position="Position.Left" />
+            </div>
         </div>
     </div>
 </template>

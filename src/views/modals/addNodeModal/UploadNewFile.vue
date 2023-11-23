@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { invoke } from '@tauri-apps/api';
-import { useStore } from '../../store';
+import { useStore } from '../../../store';
 import { computed, ref } from 'vue';
-import Toggle from '../../components/utils/Toggle.vue'
+import Toggle from '../../../components/utils/Toggle.vue'
 let store = useStore()
 
 let fileUploaded = ref(false)
@@ -36,7 +36,7 @@ async function parseWasm(file: any) {
             filename.value = file.name
             store.commit('addToast', { message: "parsed wasm file succefully", type: "success" })
         } catch (err) {
-            // store.commit('addToast', { message: "parsed wasm file failed", type: "error" })
+            store.commit('addToast', { message: "parsed wasm file failed:" + err, type: "error" })
         }
     }
     reader.readAsArrayBuffer(file)
@@ -54,8 +54,8 @@ async function wasmFileUpload(e: any) {
 async function downloadAndParseWasm() {
     if (downloadUrl.value) {
         fileUploaded.value = true
-        parsedContents.value = await invoke('download_parse_wasm', { url: downloadUrl.value })
         filename.value = downloadUrl.value.split("/").splice(-1)[0]
+        parsedContents.value = await invoke('download_parse_wasm', { url: downloadUrl.value, name: downloadUrl.value })
         store.commit('addToast', { message: "Downloaded and parsed wasm file succefully", type: "success" })
     }
 }
@@ -86,6 +86,7 @@ function clearState() {
     filename.value = ""
     dragging.value = false
     showWit.value = false
+    downloadUrl.value = ""
 }
 
 defineExpose({ clearState })

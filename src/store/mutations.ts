@@ -17,7 +17,7 @@ export const mutations: MutationTree<State> & Mutations = {
         state.manifest = payload
     },
     UpdateNodesFromManifest(state) {
-        state.graph = ManifestToGraph(state.manifest)
+        state.graph = ManifestToGraph(state.wasmComponents, state.manifest)
     },
     addToast(_, _payload: any) {
     },
@@ -31,17 +31,16 @@ export const mutations: MutationTree<State> & Mutations = {
             name: payload.name.split("/").slice(-1)[0],
             imports: payload.imports,
             exports: payload.exports,
-            wit: payload.wit
+            wit: payload.wit,
+            source: payload.name
         }
-        console.log(state.manifest)
     },
     addSpinComponent(state, payload: any): void {
-        console.log("here")
         console.log(payload)
-        let id = "c" + (Math.random() + 1).toString(36).substring(5)
-        state.graph.nodes.push(generateComponentNode("component-" + id, -1, { source: payload }))
+        let id = payload.id
+        state.graph.nodes.push(generateComponentNode("component-" + id, -1, { source: payload.source }))
         state.manifest.component[id] = {
-            source: "test.wasm"
+            source: payload.source
         }
     }
 

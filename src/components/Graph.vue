@@ -19,9 +19,13 @@ const { onConnect, addEdges, getSelectedNodes } = useVueFlow()
 const nodes = computed({ get: () => store.state.graph.nodes, set: (value) => store.state.graph.nodes = value })
 const edges = computed({ get: () => store.state.graph.edges, set: (value) => store.state.graph.edges = value })
 
-onConnect((params: Connection) => {
-    if (!validateConnection(store.state.manifest, params.source, params.sourceHandle || "", params.target, params.targetHandle || "")) {
-        store.commit('addToast', { message: "invalid connection", type: "error" })
+onConnect(async (params: Connection) => {
+    try {
+        if (!await validateConnection(store.state.manifest, params.source, params.sourceHandle || "", params.target, params.targetHandle || "")) {
+            return
+        }
+    } catch (err) {
+        store.commit('addToast', { message: err, type: "error" })
         return
     }
     let edge: Edge = {

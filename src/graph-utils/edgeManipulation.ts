@@ -1,6 +1,7 @@
+import { invoke } from "@tauri-apps/api"
 import { Edge } from "@vue-flow/core"
 
-export function validateConnection(manifest: any, source: string, sourceHandle: string, target: string, targetHandle: string): boolean {
+export async function validateConnection(manifest: any, source: string, sourceHandle: string, target: string, targetHandle: string): Promise<boolean> {
 
     let targetNode = getNodeType(target)
 
@@ -8,7 +9,7 @@ export function validateConnection(manifest: any, source: string, sourceHandle: 
         case "component":
             return validateComponentConnect(source, sourceHandle, targetHandle)
         case "trigger":
-            return validateTriggerConnect(manifest, sourceHandle)
+            return await validateTriggerConnect(manifest, source, sourceHandle)
     }
 
     return false
@@ -23,9 +24,32 @@ function validateComponentConnect(source: string, _sourceHandle: string, targetH
     return false
 }
 
-function validateTriggerConnect(_manifest: any, sourceHandle: string): boolean {
-    if ((sourceHandle === "export")) {
-        return true
+async function validateTriggerConnect(manifest: any, source: string, sourceHandle: string): Promise<boolean> {
+    let id = source.replace("component-", "")
+    try {
+
+        if (await invoke('validate_connection', {
+            sourceComponentName: manifest.component[id].source,
+            sourceExportName: sourceHandle,
+            targetComponentName: "http_trigger",
+            targetImportName: "wasi:http/incoming-handler@0.2.0-rc-2023-10-18",
+        })) {
+            return true
+        }
+    } catch (_) {
+        try {
+
+            if (await invoke('validate_connection', {
+                sourceComponentName: manifest.component[id].source,
+                sourceExportName: sourceHandle,
+                targetComponentName: "http_trigger",
+                targetImportName: "fermyon:spin/inbound-http",
+            })) {
+                return true
+            }
+        } catch (_) {
+            throw (`Component export "${sourceHandle}" does not match either "wasi:http/incoming-handler@0.2.0-rc-2023-10-18" or "fermyon:spin/inbound-http"`)
+        }
     }
     return false
 }

@@ -27,7 +27,8 @@ wasmparser = "0.118.0"
 wat = "1.0.71"
 wit-component = "0.18.2"
 spin-componentize = { git = "https://github.com/fermyon/spin-componentize", rev = "191789170abde10cd55590466c0660dd6c7d472a" }
-reqwest = "0.11.22"
+reqwest = { version = "0.11.22", features = ["blocking"] }
+once_cell = "1.18.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

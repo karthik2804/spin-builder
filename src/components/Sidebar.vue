@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import AppDetails from './utils/AppDetails.vue'
-import AddNodeModal from '../views/addNodeModal/AddNodeModal.vue'
+import AddNodeModal from '../views/modals/addNodeModal/AddNodeModal.vue'
+import AddSpinComponent from '../views/modals/addSpinComponent/AddSpinComponent.vue'
 import { useStore } from '../store';
 
 let store = useStore()
 
-let modalVisible = ref(false)
-function openModal() {
-    modalVisible.value = true
+let modalVisible: any = ref({
+    addNode: false,
+    addSpinComponent: false,
+})
+function openModal(id: string) {
+    modalVisible.value[id] = true
 }
-function closeModal() {
-    modalVisible.value = false
+function closeModal(id: string) {
+    modalVisible.value[id] = false
 }
 
 function save() {
@@ -20,9 +24,11 @@ function save() {
 
 let components = computed(() => store.state.wasmComponents)
 
-function addSpinComponent(id: string) {
-    console.log("here")
-    store.commit('addSpinComponent', id)
+let selectedWasmComponent: any = ref({})
+
+function handleAddSpinComponent(id: string) {
+    selectedWasmComponent = store.state.wasmComponents[id]
+    openModal('addSpinComponent')
 }
 
 </script>
@@ -43,19 +49,21 @@ function addSpinComponent(id: string) {
                     <div class="flex-grow text-sm">
                         {{ component.name }}
                     </div>
-                    <div class="pl-4 text-lg" @click="addSpinComponent(component.name)">+</div>
+                    <div class="pl-4 text-lg" @click="handleAddSpinComponent(component.source)">+</div>
                 </div>
             </div>
         </div>
         <div class="p-4 flex justify-center">
-            <button @click="openModal()"
+            <button @click="openModal('addNode')"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-4">Add
                 Node</button>
             <button @click="save" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Save
                 Manifest</button>
         </div>
     </aside>
-    <AddNodeModal v-show="modalVisible" @close="closeModal"></AddNodeModal>
+    <AddSpinComponent v-show="modalVisible.addSpinComponent" @close="closeModal('addSpinComponent')"
+        :wasmComponent="selectedWasmComponent"></AddSpinComponent>
+    <AddNodeModal v-show="modalVisible.addNode" @close="closeModal('addNode')"></AddNodeModal>
 </template>
 <style>
 #sidebar {
